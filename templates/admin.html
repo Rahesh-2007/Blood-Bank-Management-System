@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin Portal | Blood Bank Central System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/toast.css">
+</head>
+
+<body>
+
+  <div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-droplet"></i></div>
+        <div>
+          <div class="brand-text">BloodBank</div>
+          <div class="role-tag"><i class="fa-solid fa-user-shield text-danger"></i> Super Admin</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="overview">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </div>
+        <div class="nav-item" data-section="requests">
+          <i class="fa-solid fa-truck-medical"></i> Blood Requests
+        </div>
+        <div class="nav-item" data-section="stock">
+          <i class="fa-solid fa-boxes-stacked"></i> Stock & FEFO Bags
+        </div>
+        <div class="nav-item" data-section="donors">
+          <i class="fa-solid fa-hand-holding-heart"></i> Donors & History
+        </div>
+        <div class="nav-item" data-section="entities">
+          <i class="fa-solid fa-users-gear"></i> Hospitals & Staff
+        </div>
+        <div class="nav-item" data-section="invoices">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Invoices & Billing
+        </div>
+        <div class="nav-item" data-section="reports">
+          <i class="fa-solid fa-file-export"></i> Reports & Audit Log
+        </div>
+        <div class="nav-item" data-section="profile">
+          <i class="fa-solid fa-user-gear"></i> My Profile
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="API.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div style="width:36px; height:36px; border-radius:8px; background:var(--primary-subtle); border:1px solid var(--primary-border); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h3 style="font-size:1.15rem; margin-bottom:1px;">Super Admin Central Console</h3>
+            <div class="text-xs text-muted">Institutional Oversight & Blood Inventory Governance</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:1.25rem;">
+          <div style="text-align:right;">
+            <div id="admin-user-name" style="font-weight:700; font-size:0.925rem; color:var(--text-heading);">Super Admin</div>
+            <div class="text-dim text-xs" style="font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">Global Authority</div>
+          </div>
+          <div
+            onclick="showSection('profile')"
+            title="Open Admin Profile"
+            style="cursor:pointer; width:40px; height:40px; border-radius:50%; background:var(--primary-gradient); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:var(--font-heading); box-shadow:0 2px 8px rgba(185,28,28,0.25); border:2px solid #ffffff;">
+            SA
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <main class="content-body">
+
+        <!-- ================= SECTION 1: OVERVIEW ================= -->
+        <section id="section-overview" class="admin-section">
+
+          <!-- 4 Core Summary Cards -->
+          <div class="stats-grid">
+            <div class="card stat-card">
+              <div class="stat-info">
+                <h3 id="stat-available-bags" class="text-gradient font-mono">0</h3>
+                <p>Available Bags</p>
+              </div>
+              <div class="stat-icon" style="background:var(--primary-subtle); color:var(--primary);">
+                <i class="fa-solid fa-box-archive"></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <h3 id="stat-pending-requests" class="text-warning font-mono">0</h3>
+                <p>Active Requests</p>
+              </div>
+              <div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <h3 id="stat-expiring-soon" class="text-danger font-mono">0</h3>
+                <p>Expiring Soon (&le;7d)</p>
+              </div>
+              <div class="stat-icon" style="background:var(--danger-bg); color:var(--danger);">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <h3 id="stat-outstanding-balance" class="text-danger font-mono">₹0.00</h3>
+                <p>Outstanding Due</p>
+              </div>
+              <div class="stat-icon" style="background:var(--primary-subtle); color:var(--primary);">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Urgent Requests Queue Immediately Below Summary Cards -->
+          <div class="card" style="margin-bottom:2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem;">
+              <div>
+                <h4><i class="fa-solid fa-fire text-danger"></i> Urgent Blood Requests Queue (Priority Action)</h4>
+                <p class="text-xs text-muted">Awaiting fulfilment. Real-time countdown & FEFO earliest-expiry batch allocation.</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="showSection('requests')">View All Requests</button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Req ID</th>
+                    <th>Hospital</th>
+                    <th>Group</th>
+                    <th>Quantity</th>
+                    <th>Urgency</th>
+                    <th>Time Remaining</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="overview-requests-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Stock Summary Per Blood Group -->
+          <div style="margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+            <h4><i class="fa-solid fa-droplet text-danger"></i> Live Usable Blood Stock</h4>
+            <span class="text-xs text-muted">Condition Breakdown: Good (&gt;7 days) vs Critical (&le;7 days)</span>
+          </div>
+          <div id="overview-stock-cards" class="stock-grid"></div>
+
+        </section>
+
+        <!-- ================= SECTION 2: REQUESTS ================= -->
+        <section id="section-requests" class="admin-section" style="display:none;">
+          <div class="card">
+            <div
+              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <h4><i class="fa-solid fa-truck-medical text-danger"></i> Blood Request Management & FEFO Processing</h4>
+                <p class="text-xs text-muted">FEFO (First Expiry, First Out) selection ensures zero expiration wastage during dispatch.</p>
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <select id="filter-req-status" class="form-select text-sm" style="width:140px;" onchange="loadBloodRequests()">
+                  <option value="ALL">All Statuses</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Partially Approved">Partially Approved</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+                <button class="btn btn-sm btn-secondary" onclick="loadBloodRequests()">
+                  <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Req ID</th>
+                    <th>Hospital</th>
+                    <th>Group</th>
+                    <th>Requested / Issued</th>
+                    <th>Emergency Level</th>
+                    <th>Deadline / Urgency</th>
+                    <th>Status</th>
+                    <th>Process Action</th>
+                  </tr>
+                </thead>
+                <tbody id="requests-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 3: STOCK & FEFO BAGS ================= -->
+        <section id="section-stock" class="admin-section" style="display:none;">
+          <div style="margin-bottom:1.5rem;">
+            <h4><i class="fa-solid fa-boxes-stacked text-danger"></i> Blood Bank Inventory & FEFO Expiry Tracking</h4>
+            <p class="text-xs text-muted">Blood units have a 35-day shelf life. Earliest expiring units are allocated first (FEFO).</p>
+          </div>
+          <div id="stock-cards-container" class="stock-grid"></div>
+
+          <div class="card" style="margin-top:1.5rem;">
+            <div
+              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.75rem;">
+              <h4 style="font-size:1.1rem;">Individual Blood Bags (BAG10001...)</h4>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <select id="filter-bag-group" class="form-select font-mono text-sm" style="width:110px;"
+                  onchange="loadBloodBags()">
+                  <option value="ALL">All Groups</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+                <select id="filter-bag-status" class="form-select text-sm" style="width:140px;"
+                  onchange="loadBloodBags()">
+                  <option value="ALL">All Status</option>
+                  <option value="Available" selected>Available (Screened)</option>
+                  <option value="Pending Screening">Pending Screening</option>
+                  <option value="Issued">Issued</option>
+                  <option value="Expired">Expired</option>
+                </select>
+                <input type="text" id="search-bags" class="form-control text-sm" style="width:180px;"
+                  placeholder="Search Bag ID / Donor" onkeyup="loadBloodBags()">
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Bag ID</th>
+                    <th>Group</th>
+                    <th>Donor</th>
+                    <th>Collected</th>
+                    <th>Expiry (FEFO)</th>
+                    <th>Storage Location</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="bloodbags-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 4: DONORS ================= -->
+        <section id="section-donors" class="admin-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+              <div>
+                <h4><i class="fa-solid fa-hand-holding-heart text-danger"></i> Registered Blood Donors</h4>
+                <p class="text-xs text-muted">Clinical criteria: Age 18–60, Weight &ge;45kg, No active health issues, 120-day donation interval.</p>
+              </div>
+              <input type="text" id="search-donors" class="form-control text-sm" style="width:220px;" placeholder="Search Donor Name / ID..." onkeyup="loadDonorsList()">
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Donor ID</th>
+                    <th>Name</th>
+                    <th>Age / Gender</th>
+                    <th>Blood Group</th>
+                    <th>Weight</th>
+                    <th>Contact</th>
+                    <th>Eligibility Status</th>
+                    <th>Last Donation</th>
+                  </tr>
+                </thead>
+                <tbody id="donors-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 5: ENTITIES ================= -->
+        <section id="section-entities" class="admin-section" style="display:none;">
+          <!-- Hospitals Table Card -->
+          <div class="card" style="margin-bottom:2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h4><i class="fa-solid fa-hospital text-danger"></i> Registered Hospitals</h4>
+              <button class="btn btn-sm btn-primary"
+                onclick="document.getElementById('add-hospital-modal').classList.add('active')">
+                <i class="fa-solid fa-plus"></i> Add Hospital
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Hospital ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Outstanding Balance</th>
+                  </tr>
+                </thead>
+                <tbody id="hospitals-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Staff Table Card -->
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h4><i class="fa-solid fa-user-doctor text-danger"></i> Blood Bank Staff & Approvals</h4>
+              <button class="btn btn-sm btn-primary"
+                onclick="document.getElementById('add-coordinator-modal').classList.add('active')">
+                <i class="fa-solid fa-plus"></i> Add Staff
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Branch / Center</th>
+                    <th>Phone</th>
+                    <th>Status & Action</th>
+                  </tr>
+                </thead>
+                <tbody id="coordinators-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 6: INVOICES ================= -->
+        <section id="section-invoices" class="admin-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <div>
+                <h4><i class="fa-solid fa-file-invoice-dollar text-danger"></i> Invoices & Billing Ledger</h4>
+                <p class="text-xs text-muted">Invoices are generated per issued batch. Includes 5% standard GST.</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="loadInvoicesList()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Invoice No</th>
+                    <th>Hospital</th>
+                    <th>Request ID</th>
+                    <th>Blood Group</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Tax (5%)</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 7: REPORTS & AUDIT LOG ================= -->
+        <section id="section-reports" class="admin-section" style="display:none;">
+          <div class="card" style="margin-bottom:2rem;">
+            <h4><i class="fa-solid fa-file-export text-danger"></i> System Reports & Data Export</h4>
+            <p class="text-xs text-muted" style="margin-bottom:1.5rem;">Download raw database CSVs or formatted text summary audit reports.</p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem;">
+              <div class="card" style="background:#ffffff; border:1px solid #e2e8f0;">
+                <h5><i class="fa-solid fa-file-lines text-info"></i> Full System Audit Report</h5>
+                <p class="text-xs text-muted" style="margin:0.5rem 0 1rem 0;">Text summary of stock balances, pending requests, and finances.</p>
+                <button class="btn btn-primary btn-sm" onclick="triggerTextExport()">
+                  <i class="fa-solid fa-download"></i> Download Audit Text (.txt)
+                </button>
+              </div>
+
+              <div class="card" style="background:#ffffff; border:1px solid #e2e8f0;">
+                <h5><i class="fa-solid fa-table text-danger"></i> Blood Bags & Stock CSV</h5>
+                <p class="text-xs text-muted" style="margin:0.5rem 0 1rem 0;">Export all blood bags (BAG10001...), expiry dates, and status.</p>
+                <button class="btn btn-secondary btn-sm" onclick="triggerCsvExport('bloodbags')">
+                  <i class="fa-solid fa-file-csv"></i> Export Blood Bags (.csv)
+                </button>
+              </div>
+
+              <div class="card" style="background:#ffffff; border:1px solid #e2e8f0;">
+                <h5><i class="fa-solid fa-table text-warning"></i> Blood Requests CSV</h5>
+                <p class="text-xs text-muted" style="margin:0.5rem 0 1rem 0;">Export hospital requests, priorities, and issued units.</p>
+                <button class="btn btn-secondary btn-sm" onclick="triggerCsvExport('requests')">
+                  <i class="fa-solid fa-file-csv"></i> Export Requests (.csv)
+                </button>
+              </div>
+
+              <div class="card" style="background:#ffffff; border:1px solid #e2e8f0;">
+                <h5><i class="fa-solid fa-table text-success"></i> Invoices & Revenue CSV</h5>
+                <p class="text-xs text-muted" style="margin:0.5rem 0 1rem 0;">Export billing transactions, 5% tax, and payment status.</p>
+                <button class="btn btn-secondary btn-sm" onclick="triggerCsvExport('invoices')">
+                  <i class="fa-solid fa-file-csv"></i> Export Invoices (.csv)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Audit Log -->
+          <div class="card">
+            <h4><i class="fa-solid fa-list-check text-danger"></i> Immutable System Activity Log</h4>
+            <p class="text-xs text-muted" style="margin-bottom:1rem;">Real-time audit trail of all approvals, collections, screenings, dispatches, and payments.</p>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>User & Role</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th>Target ID</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-activity-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 8: PROFILE ================= -->
+        <section id="section-profile" class="admin-section" style="display:none;">
+          
+          <!-- Top Profile Overview Card -->
+          <div class="card" style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+            <div style="display:flex; align-items:center; gap:1.25rem;">
+              <div id="profile-avatar-initials" style="width:64px; height:64px; border-radius:16px; background:var(--primary-gradient); color:#fff; font-size:1.6rem; font-weight:800; font-family:var(--font-heading); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(185,28,28,0.25);">
+                SA
+              </div>
+              <div>
+                <h3 id="profile-display-name" style="margin-bottom:2px;">Super Admin</h3>
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span id="profile-display-role" class="badge badge-primary">Super Administrator</span>
+                  <span class="text-xs text-muted font-mono">ID: <strong id="profile-display-id">ADMIN01</strong></span>
+                  <span id="profile-display-status" class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Subtabs -->
+          <div class="auth-tabs" style="margin-bottom:1.5rem;">
+            <button type="button" class="auth-tab-btn profile-subtab active" data-tab="personal" onclick="switchProfileTab('personal')">
+              <i class="fa-solid fa-id-card"></i> Personal Details
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="security" onclick="switchProfileTab('security')">
+              <i class="fa-solid fa-lock"></i> Security & Password
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="activity" onclick="switchProfileTab('activity')">
+              <i class="fa-solid fa-chart-line"></i> Recent Activity
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="notifications" onclick="switchProfileTab('notifications')">
+              <i class="fa-solid fa-bell"></i> Alert Preferences
+            </button>
+          </div>
+
+          <!-- Tab 1: Personal Details -->
+          <div id="profile-tab-personal" class="profile-tab-content card" style="display:block;">
+            <h4 style="margin-bottom:1.25rem;"><i class="fa-solid fa-user-pen text-danger"></i> Administrator Information</h4>
+            <form onsubmit="handleProfileUpdate(event)">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                <div class="form-group">
+                  <label class="form-label">Full Name *</label>
+                  <input type="text" id="prof-input-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone Contact</label>
+                  <input type="text" id="prof-input-phone" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Designation</label>
+                  <input type="text" id="prof-input-designation" class="form-control" value="Central Operations Director">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Department</label>
+                  <input type="text" id="prof-input-department" class="form-control" value="National Transfusion Network">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Account ID (Read-only)</label>
+                  <input type="text" id="prof-input-id" class="form-control font-mono" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Member Since</label>
+                  <input type="text" id="prof-input-joined" class="form-control font-mono" readonly style="background:#f1f5f9;">
+                </div>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                <button type="submit" id="btn-save-profile" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Changes</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tab 2: Security -->
+          <div id="profile-tab-security" class="profile-tab-content card" style="display:none;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+              
+              <!-- Password Form -->
+              <div>
+                <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-key text-danger"></i> Change Password</h4>
+                <form id="form-change-password" onsubmit="handlePasswordChange(event)">
+                  <div class="form-group">
+                    <label class="form-label">Current Password *</label>
+                    <input type="password" id="prof-curr-pass" class="form-control" placeholder="••••••••" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">New Password * <span class="text-xs text-muted">[Min 6 chars]</span></label>
+                    <input type="password" id="prof-new-pass" class="form-control" placeholder="New secure password" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Confirm New Password *</label>
+                    <input type="password" id="prof-confirm-pass" class="form-control" placeholder="Repeat new password" required>
+                  </div>
+                  <button type="submit" id="btn-save-password" class="btn btn-primary btn-sm" style="width:100%;">
+                    <i class="fa-solid fa-shield-check"></i> Update Password
+                  </button>
+                </form>
+              </div>
+
+              <!-- Email Form -->
+              <div>
+                <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-envelope text-danger"></i> Update Email Address</h4>
+                <form id="form-change-email" onsubmit="handleEmailChange(event)">
+                  <div class="form-group">
+                    <label class="form-label">New Email Address *</label>
+                    <input type="email" id="prof-new-email" class="form-control" placeholder="new.email@bloodbank.org" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Current Password (to authorize change) *</label>
+                    <input type="password" id="prof-email-pass" class="form-control" placeholder="••••••••" required>
+                  </div>
+                  <button type="submit" id="btn-save-email" class="btn btn-secondary btn-sm" style="width:100%;">
+                    <i class="fa-solid fa-envelope-circle-check"></i> Change Email Address
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tab 3: Activity Logs -->
+          <div id="profile-tab-activity" class="profile-tab-content card" style="display:none;">
+            <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-clock-rotate-left text-danger"></i> Personal Audit History</h4>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr><th>Timestamp</th><th>Action</th><th>Description</th><th>Reference</th></tr>
+                </thead>
+                <tbody id="profile-activity-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 4: Notifications -->
+          <div id="profile-tab-notifications" class="profile-tab-content card" style="display:none;">
+            <h4 style="margin-bottom:1.25rem;"><i class="fa-solid fa-bell text-danger"></i> Notification & Alert Preferences</h4>
+            <form onsubmit="handleNotificationSave(event)">
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                  <input type="checkbox" id="notif-urgent" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                  <div>
+                    <strong>Emergency Blood Requests</strong>
+                    <div class="text-xs text-muted">Receive high-priority alerts when emergency (2h) hospital requests arrive.</div>
+                  </div>
+                </label>
+
+                <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                  <input type="checkbox" id="notif-expiry" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                  <div>
+                    <strong>Stock Expiry & Critical Level Alerts</strong>
+                    <div class="text-xs text-muted">Alerts when blood units are within 7 days of expiration or blood group drops below 3 units.</div>
+                  </div>
+                </label>
+
+                <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                  <input type="checkbox" id="notif-invoice" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                  <div>
+                    <strong>Billing & Payment Confirmations</strong>
+                    <div class="text-xs text-muted">Notifications when invoices are cleared and hospital balances update.</div>
+                  </div>
+                </label>
+              </div>
+
+              <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save Preferences</button>
+              </div>
+            </form>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: PROCESS BLOOD REQUEST (FEFO) ================= -->
+  <div id="process-request-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h4><i class="fa-solid fa-bolt text-danger"></i> Process Request (FEFO Earliest Expiry)</h4>
+        <button class="btn-icon btn-secondary" onclick="closeProcessModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Summary Grid -->
+        <div
+          style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1rem; margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Request ID:</span>
+            <strong id="modal-process-req-id" class="font-mono"></strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Hospital:</span>
+            <strong id="modal-process-hospital"></strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Blood Group:</span>
+            <span id="modal-process-group" class="badge badge-primary font-mono text-sm"></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Total Requested:</span>
+            <strong id="modal-process-requested-qty"></strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Remaining Needed:</span>
+            <strong id="modal-process-remaining-qty" class="text-danger"></strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+            <span class="text-muted">Urgency Level:</span>
+            <span id="modal-process-urgency"></span>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span class="text-muted">Available in Stock:</span>
+            <strong id="modal-process-stock-count" class="text-success"></strong>
+          </div>
+        </div>
+
+        <!-- FEFO Queue Bags Preview -->
+        <div id="modal-fifo-bags-preview" style="margin-bottom:1.25rem;"></div>
+
+        <!-- Decision Remarks & Partial Input -->
+        <div class="form-group">
+          <label class="form-label">Quantity to Issue in this Batch:</label>
+          <input type="number" id="modal-process-partial-qty" class="form-control" min="1" value="1">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Admin Remarks / Dispatch Notes:</label>
+          <input type="text" id="modal-process-remarks" class="form-control"
+            placeholder="e.g. Priority dispatch via Ambulance #4">
+        </div>
+
+      </div>
+      <div class="modal-footer" style="justify-content:space-between;">
+        <button class="btn btn-outline-danger" onclick="submitProcessDecision('REJECT')">
+          <i class="fa-solid fa-xmark"></i> Reject Request
+        </button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="submitProcessDecision('PARTIAL_APPROVE')">
+            <i class="fa-solid fa-circle-half-stroke"></i> Partial Issue & Bill
+          </button>
+          <button class="btn btn-primary" onclick="submitProcessDecision('APPROVE_FULL')">
+            <i class="fa-solid fa-check-double"></i> Full FEFO Issue & Bill
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD HOSPITAL ================= -->
+  <div id="add-hospital-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h4><i class="fa-solid fa-hospital text-danger"></i> Add New Hospital</h4>
+        <button class="btn-icon btn-secondary"
+          onclick="document.getElementById('add-hospital-modal').classList.remove('active')">&times;</button>
+      </div>
+      <form id="add-hospital-form" onsubmit="submitAddHospital(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Hospital Name *</label>
+            <input type="text" id="hosp-name" class="form-control" placeholder="e.g. City Care Multi-Speciality"
+              required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Login Email *</label>
+            <input type="email" id="hosp-email" class="form-control" placeholder="citycare@hospital.org" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="hosp-password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Phone</label>
+            <input type="text" id="hosp-phone" class="form-control" placeholder="+91 98765 00000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Physical Address</label>
+            <input type="text" id="hosp-address" class="form-control" placeholder="Block B, Emergency Wing, Health Ave">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Balance (INR)</label>
+            <input type="number" id="hosp-balance" class="form-control" value="0.00" step="0.01">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+            onclick="document.getElementById('add-hospital-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Register Hospital</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD STAFF ================= -->
+  <div id="add-coordinator-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h4><i class="fa-solid fa-user-doctor text-danger"></i> Add Blood Bank Staff</h4>
+        <button class="btn-icon btn-secondary"
+          onclick="document.getElementById('add-coordinator-modal').classList.remove('active')">&times;</button>
+      </div>
+      <form id="add-coordinator-form" onsubmit="submitAddCoordinator(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="coord-name" class="form-control" placeholder="Dr. Robert Fox" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" id="coord-email" class="form-control" placeholder="robert@bloodbank.org" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="coord-password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Branch / Blood Bank Center</label>
+            <input type="text" id="coord-branch" class="form-control" placeholder="Main Red Cross Center">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Phone</label>
+            <input type="text" id="coord-phone" class="form-control" placeholder="+91 98123 45678">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+            onclick="document.getElementById('add-coordinator-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Register Staff</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: INVOICE DETAIL & PRINT ================= -->
+  <div id="invoice-detail-modal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width:680px;">
+      <div class="modal-header">
+        <h4><i class="fa-solid fa-file-invoice text-danger"></i> Invoice Details</h4>
+        <button class="btn-icon btn-secondary" onclick="closeInvoiceModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="printable-invoice-content">
+
+        <div
+          style="border-bottom:2px solid #e2e8f0; padding-bottom:1rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <h3 style="font-size:1.4rem;"><i class="fa-solid fa-droplet text-danger"></i> Central Blood Bank</h3>
+            <div class="text-xs text-muted">Emergency Blood Distribution Network</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="font-mono font-bold" style="font-size:1.15rem;" id="modal-inv-number"></div>
+            <div class="text-xs text-muted" id="modal-inv-date"></div>
+            <div id="modal-inv-status" style="margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+          <div>
+            <div class="text-xs text-muted font-bold">BILLED TO:</div>
+            <strong id="modal-inv-hospital-name"></strong>
+            <div class="text-xs text-dim" id="modal-inv-hospital-email"></div>
+            <div class="text-xs text-dim" id="modal-inv-hospital-address"></div>
+          </div>
+          <div>
+            <div class="text-xs text-muted font-bold">REFERENCE:</div>
+            <div class="text-xs">Request ID: <strong id="modal-inv-req-id" class="font-mono"></strong></div>
+            <div class="text-xs">Blood Group: <strong id="modal-inv-blood-group" class="font-mono text-danger"></strong>
+            </div>
+            <div class="text-xs">Units Issued: <strong id="modal-inv-quantity"></strong></div>
+          </div>
+        </div>
+
+        <div
+          style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.75rem; margin-bottom:1rem; font-size:0.85rem;">
+          <div class="text-xs text-muted mb-1"><strong>Issued Blood Bag IDs:</strong></div>
+          <div id="modal-inv-bags" class="font-mono text-xs text-success" style="font-weight:600;"></div>
+        </div>
+
+        <div style="border-top:1px solid #e2e8f0; padding-top:0.75rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+            <span class="text-muted">Unit Price:</span>
+            <span id="modal-inv-unit-price"></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+            <span class="text-muted">Subtotal:</span>
+            <span id="modal-inv-subtotal"></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+            <span class="text-muted">Tax (5% GST):</span>
+            <span id="modal-inv-tax"></span>
+          </div>
+          <div
+            style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; border-top:1px dashed #cbd5e1; padding-top:0.5rem; margin-top:0.5rem;">
+            <span>Total Payable:</span>
+            <span id="modal-inv-total" class="text-gradient"></span>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+        <button type="button" class="btn btn-primary" onclick="closeInvoiceModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/profile.js"></script>
+  <script src="/static/js/admin.js"></script>
+</body>
+
+</html>

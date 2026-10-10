@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Bank Staff Portal | Blood Bank Central System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/toast.css">
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-droplet"></i>
+        </div>
+        <div>
+          <div class="brand-text">BloodBank</div>
+          <div class="role-tag"><i class="fa-solid fa-user-doctor text-danger"></i> Blood Bank Staff</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="register-donor">
+          <i class="fa-solid fa-user-plus"></i> 1. Register Donor
+        </div>
+        <div class="nav-item" data-section="record-donation">
+          <i class="fa-solid fa-hand-holding-droplet"></i> 2. Record Donation
+        </div>
+        <div class="nav-item" data-section="screening">
+          <i class="fa-solid fa-microscope"></i> 3. Lab Screening
+        </div>
+        <div class="nav-item" data-section="donors-list">
+          <i class="fa-solid fa-address-book"></i> Donors Directory
+        </div>
+        <div class="nav-item" data-section="today-donations">
+          <i class="fa-solid fa-calendar-day"></i> Today's Donations
+        </div>
+        <div class="nav-item" data-section="inventory">
+          <i class="fa-solid fa-boxes-stacked"></i> Stock Inventory
+        </div>
+        <div class="nav-item" data-section="profile">
+          <i class="fa-solid fa-user-gear"></i> My Profile
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="API.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div style="width:36px; height:36px; border-radius:8px; background:var(--primary-subtle); border:1px solid var(--primary-border); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+          <div>
+            <h3 style="font-size:1.15rem; margin-bottom:1px;">Blood Bank Staff Console</h3>
+            <div class="text-xs text-muted" id="coord-branch-name">Main Blood Collection Branch</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:1.25rem;">
+          <div style="text-align:right;">
+            <div id="coord-user-name" style="font-weight:700; font-size:0.925rem; color:var(--text-heading);">Blood Bank Staff</div>
+            <div class="text-dim text-xs" style="font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">Blood Collection Officer</div>
+          </div>
+          <div
+            onclick="showCoordinatorSection('profile')"
+            title="Open Staff Profile"
+            style="cursor:pointer; width:40px; height:40px; border-radius:50%; background:var(--primary-gradient); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:var(--font-heading); box-shadow:0 2px 8px rgba(185,28,28,0.25); border:2px solid #ffffff;">
+            ST
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <main class="content-body">
+
+        <!-- ================= SECTION 1: REGISTER DONOR ================= -->
+        <section id="section-register-donor" class="coord-section">
+          <div class="card" style="max-width:850px; margin:0 auto;">
+            <div style="margin-bottom:1.5rem; border-bottom:1px solid #e2e8f0; padding-bottom:1rem;">
+              <h4><i class="fa-solid fa-user-plus text-danger"></i> Register New Blood Donor</h4>
+              <p class="text-xs text-muted">Clinical rules applied automatically: Age 18–60, Weight &ge;45 kg, No active health issues, 120-day interval.</p>
+            </div>
+
+            <!-- Live Eligibility Feedback Card -->
+            <div id="live-eligibility-box" style="margin-bottom:1.5rem;"></div>
+
+            <form id="register-donor-form">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                
+                <div class="form-group">
+                  <label class="form-label">Full Name *</label>
+                  <input type="text" id="reg-name" class="form-control" placeholder="e.g. Ramesh Chandra" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Blood Group *</label>
+                  <select id="reg-blood-group" class="form-select font-mono font-bold" required>
+                    <option value="O+">O+ (Universal RBC Recipient Safe)</option>
+                    <option value="O-">O- (Universal Donor)</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+ (Universal Plasma Donor)</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Age (Years) * <span class="text-xs text-muted">[18 - 60]</span></label>
+                  <input type="number" id="reg-age" class="form-control" min="1" max="100" placeholder="e.g. 28" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Weight (kg) * <span class="text-xs text-muted">[Min 45 kg]</span></label>
+                  <input type="number" id="reg-weight" class="form-control" min="20" max="250" step="0.5" placeholder="e.g. 65" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Gender</label>
+                  <select id="reg-gender" class="form-select">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Contact Phone</label>
+                  <input type="text" id="reg-contact" class="form-control" placeholder="+91 98000 12345">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="reg-email" class="form-control" placeholder="donor@example.com">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Last Donation Date (if any) <span class="text-xs text-muted">[120 days gap]</span></label>
+                  <input type="date" id="reg-last-donation" class="form-control">
+                </div>
+
+              </div>
+
+              <div style="background:#f8fafc; padding:1rem; border-radius:10px; border:1px solid #e2e8f0; margin-top:0.5rem; margin-bottom:1.5rem;">
+                <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text-main);">
+                  <input type="checkbox" id="reg-health-issue" style="width:18px; height:18px; accent-color:var(--primary);">
+                  <span>Donor reports active health condition or medication (Disqualifies from collection)</span>
+                </label>
+                <input type="text" id="reg-health-notes" class="form-control text-sm" style="margin-top:0.75rem;" placeholder="Health condition notes (optional)...">
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:1rem;">
+                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                <button type="submit" id="reg-submit-btn" class="btn btn-primary">
+                  <i class="fa-solid fa-user-check"></i> Register Donor & Evaluate
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 2: RECORD DONATION ================= -->
+        <section id="section-record-donation" class="coord-section" style="display:none;">
+          <div class="card" style="max-width:800px; margin:0 auto;">
+            <div style="margin-bottom:1.5rem; border-bottom:1px solid #e2e8f0; padding-bottom:1rem;">
+              <h4><i class="fa-solid fa-hand-holding-droplet text-danger"></i> Record Blood Donation</h4>
+              <p class="text-xs text-muted">Generates a unique Blood Bag (BAG10001...) with a 35-day shelf life and queues it for mandatory lab screening.</p>
+            </div>
+
+            <!-- Selected Donor Info Banner -->
+            <div id="donate-donor-info-card" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <div>
+                  <h4 id="card-donor-name" style="margin-bottom:2px;"></h4>
+                  <span class="text-xs text-muted">Blood Group: <strong id="card-donor-group" class="text-danger font-mono font-bold"></strong></span>
+                </div>
+                <div id="card-donor-status"></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; font-size:0.85rem;" class="text-muted">
+                <div>Age: <strong id="card-donor-age" style="color:var(--text-main);"></strong></div>
+                <div>Weight: <strong id="card-donor-weight" style="color:var(--text-main);"></strong></div>
+                <div>Last Donated: <strong id="card-donor-last-donate" style="color:var(--text-main);"></strong></div>
+              </div>
+            </div>
+
+            <form id="record-donation-form">
+              <div class="form-group">
+                <label class="form-label">Select Registered Donor *</label>
+                <select id="donate-donor-select" class="form-select font-mono" required>
+                  <option value="">-- Loading Donors --</option>
+                </select>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                <div class="form-group">
+                  <label class="form-label">Collection Volume (ml)</label>
+                  <select id="donate-volume" class="form-select">
+                    <option value="450" selected>450 ml (Standard Single Unit)</option>
+                    <option value="350">350 ml (Pediatric / Low Volume)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Quarantine / Storage Location</label>
+                  <input type="text" id="donate-location" class="form-control" value="Quarantine Room A - Rack 1">
+                </div>
+              </div>
+
+              <div style="background:var(--primary-subtle); border:1px dashed var(--primary-border); border-radius:10px; padding:1rem; margin-bottom:1.5rem; font-size:0.85rem;">
+                <div class="font-bold text-danger mb-1"><i class="fa-solid fa-microscope"></i> Mandatory Clinical Pathogen Screening:</div>
+                <div class="text-muted">Newly collected units enter <strong>Pending Screening</strong> status until viral tests (HIV, HBV, HCV, Syphilis, Malaria) are cleared.</div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" id="record-donation-btn" class="btn btn-primary btn-lg" disabled>
+                  <i class="fa-solid fa-droplet"></i> Complete Donation & Queue for Screening
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 3: LAB SCREENING ================= -->
+        <section id="section-screening" class="coord-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <div>
+                <h4><i class="fa-solid fa-microscope text-danger"></i> Lab Screening & Quarantine Release</h4>
+                <p class="text-xs text-muted">Mandatory viral screening tests required before blood units are released to Available inventory.</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="loadPendingScreeningBags()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Bag ID</th>
+                    <th>Group</th>
+                    <th>Donor Name</th>
+                    <th>Collected On</th>
+                    <th>Location</th>
+                    <th>Screening Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="screening-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 4: DONORS LIST ================= -->
+        <section id="section-donors-list" class="coord-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <h4><i class="fa-solid fa-address-book text-danger"></i> Donors Directory</h4>
+                <p class="text-xs text-muted">View all registered donors, verify eligibility, and update donor profiles.</p>
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <select id="coord-filter-donor-group" class="form-select text-sm" style="width:120px;" onchange="loadDonorsTable()">
+                  <option value="ALL">All Groups</option>
+                  <option value="A+">A+</option><option value="A-">A-</option>
+                  <option value="B+">B+</option><option value="B-">B-</option>
+                  <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                  <option value="O+">O+</option><option value="O-">O-</option>
+                </select>
+                <input type="text" id="coord-search-donor" class="form-control text-sm" style="width:200px;" placeholder="Search Name/ID..." onkeyup="loadDonorsTable()">
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Donor ID</th>
+                    <th>Name</th>
+                    <th>Age / Gender</th>
+                    <th>Blood Group</th>
+                    <th>Weight</th>
+                    <th>Contact</th>
+                    <th>Eligibility</th>
+                    <th>Last Donation</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="coord-donors-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 5: TODAY DONATIONS ================= -->
+        <section id="section-today-donations" class="coord-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <div>
+                <h4><i class="fa-solid fa-calendar-day text-danger"></i> Today's Blood Collections</h4>
+                <p class="text-xs text-muted">Real-time log of units collected at your center today.</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="loadTodayDonations()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Bag ID</th>
+                    <th>Donor</th>
+                    <th>Blood Group</th>
+                    <th>Volume</th>
+                    <th>Location</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="today-donations-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= SECTION 6: INVENTORY ================= -->
+        <section id="section-inventory" class="coord-section" style="display:none;">
+          <div style="margin-bottom:1.25rem;">
+            <h4><i class="fa-solid fa-boxes-stacked text-danger"></i> Current Live Usable Blood Stock</h4>
+            <p class="text-xs text-muted">Central blood bank usable stock inventory available for hospital requests.</p>
+          </div>
+          <div id="coord-stock-cards" class="stock-grid"></div>
+        </section>
+
+        <!-- ================= SECTION 7: PROFILE ================= -->
+        <section id="section-profile" class="coord-section" style="display:none;">
+          
+          <!-- Top Profile Overview Card -->
+          <div class="card" style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+            <div style="display:flex; align-items:center; gap:1.25rem;">
+              <div id="profile-avatar-initials" style="width:64px; height:64px; border-radius:16px; background:var(--primary-gradient); color:#fff; font-size:1.6rem; font-weight:800; font-family:var(--font-heading); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(185,28,28,0.25);">
+                ST
+              </div>
+              <div>
+                <h3 id="profile-display-name" style="margin-bottom:2px;">Blood Bank Staff</h3>
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span id="profile-display-role" class="badge badge-primary">Blood Bank Staff</span>
+                  <span class="text-xs text-muted font-mono">ID: <strong id="profile-display-id">COORD101</strong></span>
+                  <span id="profile-display-status" class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Subtabs -->
+          <div class="auth-tabs" style="margin-bottom:1.5rem;">
+            <button type="button" class="auth-tab-btn profile-subtab active" data-tab="personal" onclick="switchProfileTab('personal')">
+              <i class="fa-solid fa-id-card"></i> Staff Details
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="security" onclick="switchProfileTab('security')">
+              <i class="fa-solid fa-lock"></i> Security & Password
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="activity" onclick="switchProfileTab('activity')">
+              <i class="fa-solid fa-chart-line"></i> Recent Activity
+            </button>
+            <button type="button" class="auth-tab-btn profile-subtab" data-tab="notifications" onclick="switchProfileTab('notifications')">
+              <i class="fa-solid fa-bell"></i> Alert Preferences
+            </button>
+          </div>
+
+          <!-- Tab 1: Staff Details -->
+          <div id="profile-tab-personal" class="profile-tab-content card" style="display:block;">
+            <h4 style="margin-bottom:1.25rem;"><i class="fa-solid fa-user-pen text-danger"></i> Blood Bank Staff Information</h4>
+            <form onsubmit="handleProfileUpdate(event)">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                <div class="form-group">
+                  <label class="form-label">Full Name *</label>
+                  <input type="text" id="prof-input-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone Contact</label>
+                  <input type="text" id="prof-input-phone" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Assigned Branch (Super Admin Authorized)</label>
+                  <input type="text" id="prof-input-branch" class="form-control font-mono" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Designation</label>
+                  <input type="text" id="prof-input-designation" class="form-control" value="Blood Collection Officer">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Staff ID (Read-only)</label>
+                  <input type="text" id="prof-input-id" class="form-control font-mono" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Joining Date</label>
+                  <input type="text" id="prof-input-joined" class="form-control font-mono" readonly style="background:#f1f5f9;">
+                </div>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                <button type="submit" id="btn-save-profile" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Changes</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tab 2: Security -->
+          <div id="profile-tab-security" class="profile-tab-content card" style="display:none;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+              <div>
+                <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-key text-danger"></i> Change Password</h4>
+                <form id="form-change-password" onsubmit="handlePasswordChange(event)">
+                  <div class="form-group">
+                    <label class="form-label">Current Password *</label>
+                    <input type="password" id="prof-curr-pass" class="form-control" placeholder="••••••••" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">New Password * <span class="text-xs text-muted">[Min 6 chars]</span></label>
+                    <input type="password" id="prof-new-pass" class="form-control" placeholder="New secure password" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Confirm New Password *</label>
+                    <input type="password" id="prof-confirm-pass" class="form-control" placeholder="Repeat new password" required>
+                  </div>
+                  <button type="submit" id="btn-save-password" class="btn btn-primary btn-sm" style="width:100%;">
+                    <i class="fa-solid fa-shield-check"></i> Update Password
+                  </button>
+                </form>
+              </div>
+
+              <div>
+                <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-envelope text-danger"></i> Update Email Address</h4>
+                <form id="form-change-email" onsubmit="handleEmailChange(event)">
+                  <div class="form-group">
+                    <label class="form-label">New Email Address *</label>
+                    <input type="email" id="prof-new-email" class="form-control" placeholder="coord.new@bloodbank.org" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Current Password (to authorize change) *</label>
+                    <input type="password" id="prof-email-pass" class="form-control" placeholder="••••••••" required>
+                  </div>
+                  <button type="submit" id="btn-save-email" class="btn btn-secondary btn-sm" style="width:100%;">
+                    <i class="fa-solid fa-envelope-circle-check"></i> Change Email Address
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Activity Logs -->
+          <div id="profile-tab-activity" class="profile-tab-content card" style="display:none;">
+            <h4 style="margin-bottom:1rem;"><i class="fa-solid fa-clock-rotate-left text-danger"></i> Personal Activity History</h4>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr><th>Timestamp</th><th>Action</th><th>Description</th><th>Reference</th></tr>
+                </thead>
+                <tbody id="profile-activity-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 4: Notifications -->
+          <div id="profile-tab-notifications" class="profile-tab-content card" style="display:none;">
+            <h4 style="margin-bottom:1.25rem;"><i class="fa-solid fa-bell text-danger"></i> Alert Preferences</h4>
+            <form onsubmit="handleNotificationSave(event)">
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                  <input type="checkbox" id="notif-urgent" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                  <div>
+                    <strong>Urgent Blood Shortage Alerts</strong>
+                    <div class="text-xs text-muted">Receive alerts when emergency requests require specific blood group collections.</div>
+                  </div>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                  <input type="checkbox" id="notif-expiry" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                  <div>
+                    <strong>Quarantine & Screening Reminders</strong>
+                    <div class="text-xs text-muted">Reminders to process pending screening for collected blood bags.</div>
+                  </div>
+                </label>
+              </div>
+              <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save Preferences</button>
+              </div>
+            </form>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: LAB SCREENING ================= -->
+  <div id="screening-modal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width:560px;">
+      <div class="modal-header">
+        <h4><i class="fa-solid fa-vial-virus text-danger"></i> Lab Screening: <span id="screen-modal-bag-id" class="font-mono"></span></h4>
+        <button class="btn-icon btn-secondary" onclick="closeScreeningModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-muted" style="margin-bottom:1.25rem;">Verify negative test results for mandatory infectious markers before releasing bag to usable stock.</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label class="form-label">HIV 1 & 2 Antibody</label>
+            <select id="screen-hiv" class="form-select text-sm font-bold">
+              <option value="NEGATIVE" selected>NEGATIVE (Passed)</option>
+              <option value="POSITIVE">POSITIVE (Failed)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hepatitis B Surface Antigen (HBsAg)</label>
+            <select id="screen-hbv" class="form-select text-sm font-bold">
+              <option value="NEGATIVE" selected>NEGATIVE (Passed)</option>
+              <option value="POSITIVE">POSITIVE (Failed)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hepatitis C (HCV)</label>
+            <select id="screen-hcv" class="form-select text-sm font-bold">
+              <option value="NEGATIVE" selected>NEGATIVE (Passed)</option>
+              <option value="POSITIVE">POSITIVE (Failed)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Syphilis (VDRL / TPHA)</label>
+            <select id="screen-syphilis" class="form-select text-sm font-bold">
+              <option value="NEGATIVE" selected>NEGATIVE (Passed)</option>
+              <option value="POSITIVE">POSITIVE (Failed)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Malaria Antigen Test</label>
+            <select id="screen-malaria" class="form-select text-sm font-bold">
+              <option value="NEGATIVE" selected>NEGATIVE (Passed)</option>
+              <option value="POSITIVE">POSITIVE (Failed)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Clinical Lab Officer Remarks</label>
+          <input type="text" id="screen-notes" class="form-control text-sm" placeholder="e.g. All rapid antibody/antigen tests non-reactive. Clear for release.">
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between;">
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="submitScreeningDecision('FAILED')">
+          <i class="fa-solid fa-biohazard"></i> Flag as Contaminated / Discard
+        </button>
+        <button type="button" class="btn btn-success btn-sm" onclick="submitScreeningDecision('PASSED')">
+          <i class="fa-solid fa-circle-check"></i> Authorize & Release to Stock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/profile.js"></script>
+  <script src="/static/js/staff.js"></script>
+</body>
+</html>

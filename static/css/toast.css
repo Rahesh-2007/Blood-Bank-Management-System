@@ -1,0 +1,114 @@
+/* ==========================================================================
+   Toast Notification Styles - Formal Red & White Theme
+   ========================================================================== */
+
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 320px;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #0f172a;
+  pointer-events: auto;
+  transform: translateX(120%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.925rem;
+  color: #090d16;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.toast-message {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.toast-close:hover {
+  color: #0f172a;
+}
+
+.toast.toast-success {
+  border-left: 4px solid #15803d;
+}
+.toast.toast-success .toast-icon {
+  color: #15803d;
+}
+
+.toast.toast-error {
+  border-left: 4px solid #b91c1c;
+}
+.toast.toast-error .toast-icon {
+  color: #b91c1c;
+}
+
+.toast.toast-warning {
+  border-left: 4px solid #b45309;
+}
+.toast.toast-warning .toast-icon {
+  color: #b45309;
+}
+
+.toast.toast-info {
+  border-left: 4px solid #0284c7;
+}
+.toast.toast-info .toast-icon {
+  color: #0284c7;
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(185, 28, 28, 0.3);
+  width: 100%;
+}

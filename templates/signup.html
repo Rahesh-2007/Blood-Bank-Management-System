@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Blood Bank Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/toast.css">
+  <style>
+    :root {
+      --brand-red: #8B1E2D;
+      --brand-red-hover: #731623;
+      --brand-red-light: #fdf2f2;
+      --brand-red-border: #fca5a5;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8fafc;
+      background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--slate-800);
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* Top Brand Navigation */
+    .portal-topbar {
+      padding: 1.75rem 2.5rem 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand-identity {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo-drop {
+      width: 34px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-red);
+      filter: drop-shadow(0 2px 4px rgba(139, 30, 45, 0.25));
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-main-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--slate-400);
+      margin-top: 2px;
+    }
+
+    /* Big Spacious Signup Wrapper */
+    .signup-main-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .signup-large-card {
+      width: 100%;
+      max-width: 760px;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 24px;
+      padding: 3.75rem 4rem;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(226, 232, 240, 0.8);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .signup-large-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #8B1E2D, #b91c1c, #8B1E2D);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .signup-header-block {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .signup-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 0 0 0.45rem;
+      letter-spacing: -0.025em;
+    }
+
+    .signup-subtext {
+      font-size: 1.05rem;
+      color: var(--slate-500);
+      margin: 0;
+    }
+
+    /* Role Switcher in Signup */
+    .role-section-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.75rem;
+      text-align: left;
+    }
+
+    .auth-tabs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .auth-tab-btn {
+      padding: 1.15rem 1rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--slate-200);
+      background: #ffffff;
+      color: var(--slate-700);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      user-select: none;
+    }
+
+    .auth-tab-btn:hover {
+      border-color: var(--slate-400);
+      background-color: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    .auth-tab-btn.active {
+      border-color: var(--brand-red);
+      background-color: #ffffff;
+      color: var(--brand-red);
+      box-shadow: 0 0 0 1.5px var(--brand-red), 0 6px 16px rgba(139, 30, 45, 0.1);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1.35rem;
+      text-align: left;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.925rem;
+      font-weight: 600;
+      color: var(--slate-900);
+      margin-bottom: 0.55rem;
+    }
+
+    .form-label i {
+      color: var(--slate-400);
+    }
+
+    .form-control {
+      width: 100%;
+      height: 52px;
+      padding: 0 1.25rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--slate-800);
+      background: #ffffff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3.5px rgba(139, 30, 45, 0.12);
+    }
+
+    .form-control::placeholder {
+      color: var(--slate-400);
+    }
+
+    .password-meter {
+      height: 6px;
+      width: 100%;
+      background: #f1f5f9;
+      border-radius: 3px;
+      margin-top: 0.55rem;
+      overflow: hidden;
+    }
+
+    .password-meter-bar {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+    }
+
+    /* Signup Submit Button */
+    .btn-submit-signup {
+      width: 100%;
+      height: 54px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-top: 1.75rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(139, 30, 45, 0.2);
+    }
+
+    .btn-submit-signup:hover {
+      background: var(--brand-red-hover);
+      box-shadow: 0 6px 20px rgba(139, 30, 45, 0.3);
+      transform: translateY(-1.5px);
+    }
+
+    .btn-submit-signup:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit-signup:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Footer / Divider */
+    .auth-footer-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      color: var(--slate-500);
+    }
+
+    .auth-footer-divider::before,
+    .auth-footer-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .auth-footer-divider span {
+      padding: 0 1rem;
+    }
+
+    .auth-footer-divider a {
+      color: var(--brand-red);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .auth-footer-divider a:hover {
+      color: var(--brand-red-hover);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .signup-large-card {
+        padding: 2.5rem 1.75rem;
+        border-radius: 16px;
+      }
+      .auth-tabs-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-row {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Brand Navigation -->
+  <header class="portal-topbar">
+    <a href="/" class="brand-identity" title="Blood Bank Management Portal">
+      <div class="brand-logo-drop">
+        <svg viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:26px; height:30px;">
+          <path d="M12 1.5C12 1.5 3 12.2 3 18C3 23 7 26.5 12 26.5C17 26.5 21 23 21 18C21 12.2 12 1.5 12 1.5Z" fill="#8B1E2D" stroke="#731623" stroke-width="1.2" stroke-linejoin="round"/>
+          <ellipse cx="9" cy="17" rx="2" ry="4" transform="rotate(-30 9 17)" fill="rgba(255,255,255,0.3)"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <span class="brand-main-title">Blood Bank Management</span>
+        <span class="brand-subtitle">CENTRAL BLOOD NETWORK</span>
+      </div>
+    </a>
+  </header>
+
+  <!-- Big Spacious Signup Card -->
+  <main class="signup-main-wrapper">
+    <div class="signup-large-card">
+      
+      <!-- Card Header -->
+      <div class="signup-header-block">
+        <h1 class="signup-title">Create your account</h1>
+        <p class="signup-subtext">Join the central blood management and emergency supply network.</p>
+      </div>
+
+      <!-- Role Selector -->
+      <div>
+        <label class="role-section-label">Select account type</label>
+        <div class="auth-tabs-grid">
+          <button type="button" class="auth-tab-btn active" data-role="HOSPITAL">
+            <i class="fa-solid fa-hospital" style="font-size:1.2rem;"></i>
+            <span>Hospital Partner</span>
+          </button>
+          <button type="button" class="auth-tab-btn" data-role="COORDINATOR">
+            <i class="fa-solid fa-user-doctor" style="font-size:1.2rem;"></i>
+            <span>Blood Bank Staff</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="signup-form">
+        <div id="dynamic-signup-fields">
+          <!-- Dynamically populated via signup.js -->
+        </div>
+
+        <!-- Password & Confirm Password Row -->
+        <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top:0.5rem;">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="signup-password" class="form-control" placeholder="Min. 6 characters" required autocomplete="new-password">
+            <div class="password-meter">
+              <div id="password-strength-bar" class="password-meter-bar"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-shield-check"></i> Confirm Password</label>
+            <input type="password" id="signup-confirm-password" class="form-control" placeholder="Repeat password" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" id="signup-submit-btn" class="btn-submit-signup">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Complete Registration</span>
+        </button>
+      </form>
+
+      <!-- Footer Divider -->
+      <div class="auth-footer-divider">
+        <span>Already have an account? <a href="/">Sign in to Portal</a></span>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/signup.js"></script>
+</body>
+</html>

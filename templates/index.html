@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Bank Management | Central Blood Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/toast.css">
+  <style>
+    /* ==========================================================================
+       Modern Pixel-Accurate Login Page Styles
+       ========================================================================== */
+    :root {
+      --brand-red: #8B1E2D;
+      --brand-red-hover: #731623;
+      --brand-red-light: #fdf2f2;
+      --brand-red-border: #fca5a5;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8fafc;
+      /* Precise Grid Pattern from Mockup */
+      background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--slate-800);
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* Top Brand Header */
+    .portal-topbar {
+      padding: 1.75rem 2.5rem 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand-identity {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo-drop {
+      width: 34px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-red);
+      filter: drop-shadow(0 2px 4px rgba(139, 30, 45, 0.25));
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-main-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--slate-400);
+      margin-top: 2px;
+    }
+
+    /* Main Container & Card */
+    .login-main-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .login-modal-card {
+      width: 100%;
+      max-width: 1120px;
+      min-height: 620px;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(226, 232, 240, 0.8);
+      display: grid;
+      grid-template-columns: 1fr 1.18fr;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* Left Visual Column */
+    .login-visual-pane {
+      background-color: #f1f5f9;
+      padding: 4.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid rgba(226, 232, 240, 0.8);
+      position: relative;
+    }
+
+    .illustration-box {
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .illustration-box svg {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+    }
+
+    .visual-tagline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.22;
+      margin: 0 0 1rem;
+      letter-spacing: -0.025em;
+    }
+
+    .visual-subtext {
+      font-size: 1.05rem;
+      color: var(--slate-500);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Right Form Column */
+    .login-form-pane {
+      padding: 4.25rem 3.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #ffffff;
+    }
+
+    .form-heading-group {
+      margin-bottom: 1.75rem;
+    }
+
+    .form-main-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 0 0 0.45rem;
+      letter-spacing: -0.025em;
+    }
+
+    .form-sub-heading {
+      font-size: 1.05rem;
+      color: var(--slate-500);
+      margin: 0;
+    }
+
+    /* Role Selector */
+    .role-selection-group {
+      margin-bottom: 1.75rem;
+    }
+
+    .role-section-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.75rem;
+    }
+
+    .role-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    .role-select-card {
+      background: #ffffff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 1.05rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      color: var(--slate-700);
+      text-align: center;
+      user-select: none;
+    }
+
+    .role-select-card:hover {
+      border-color: var(--slate-400);
+      background-color: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    .role-select-card.active {
+      border-color: var(--brand-red);
+      background-color: #fff;
+      box-shadow: 0 0 0 1.5px var(--brand-red), 0 6px 16px rgba(139, 30, 45, 0.1);
+      color: var(--brand-red);
+    }
+
+    .role-select-card .role-icon {
+      font-size: 1.5rem;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .role-select-card .role-name {
+      font-size: 0.825rem;
+      font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.25;
+    }
+
+    /* Form Fields */
+    .auth-input-group {
+      margin-bottom: 1.35rem;
+    }
+
+    .auth-input-label {
+      display: block;
+      font-size: 0.925rem;
+      font-weight: 600;
+      color: var(--slate-900);
+      margin-bottom: 0.55rem;
+    }
+
+    .input-icon-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-prefix-icon {
+      position: absolute;
+      left: 1.15rem;
+      color: var(--slate-400);
+      font-size: 1.05rem;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    .auth-text-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 1.15rem 0 3rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--slate-800);
+      background: #ffffff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .auth-text-input:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3.5px rgba(139, 30, 45, 0.12);
+    }
+
+    .auth-text-input:focus + .input-prefix-icon,
+    .auth-text-input:focus ~ .input-prefix-icon {
+      color: var(--brand-red);
+    }
+
+    .auth-text-input::placeholder {
+      color: var(--slate-400);
+    }
+
+    /* Password Input with Toggle */
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-wrapper .auth-text-input {
+      padding-right: 3.25rem;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--slate-400);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.45rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .password-toggle-btn:hover {
+      color: var(--slate-700);
+    }
+
+    /* Form Meta Row (Remember & Forgot) */
+    .form-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.35rem;
+      margin-bottom: 1.65rem;
+      font-size: 0.925rem;
+    }
+
+    .remember-me-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--slate-700);
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .remember-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brand-red);
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 0;
+    }
+
+    .forgot-pwd-link {
+      color: var(--brand-red);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .forgot-pwd-link:hover {
+      color: var(--brand-red-hover);
+      text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .btn-submit-signin {
+      width: 100%;
+      height: 52px;
+      background: var(--brand-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 10px rgba(139, 30, 45, 0.2);
+    }
+
+    .btn-submit-signin:hover {
+      background: var(--brand-red-hover);
+      box-shadow: 0 6px 18px rgba(139, 30, 45, 0.3);
+      transform: translateY(-1.5px);
+    }
+
+    .btn-submit-signin:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit-signin:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Footer / Divider */
+    .auth-footer-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin-top: 1.75rem;
+      font-size: 0.925rem;
+      color: var(--slate-500);
+    }
+
+    .auth-footer-divider::before,
+    .auth-footer-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .auth-footer-divider span {
+      padding: 0 1rem;
+    }
+
+    .auth-footer-divider a {
+      color: var(--brand-red);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .auth-footer-divider a:hover {
+      color: var(--brand-red-hover);
+      text-decoration: underline;
+    }
+
+    /* Demo Quick Autofill helper bar */
+    .quick-demo-pill {
+      margin-top: 1.25rem;
+      background: var(--slate-50);
+      border: 1px dashed var(--slate-200);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.825rem;
+      color: var(--slate-600);
+    }
+
+    .quick-demo-btn {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      color: var(--brand-red);
+      font-size: 0.775rem;
+      font-weight: 700;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .quick-demo-btn:hover {
+      background: var(--brand-red);
+      color: #ffffff;
+      border-color: var(--brand-red);
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 860px) {
+      .login-modal-card {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+      }
+      .login-visual-pane {
+        padding: 2.25rem 2rem 2rem;
+        text-align: center;
+        border-right: none;
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .illustration-box {
+        max-width: 200px;
+        margin-bottom: 1rem;
+      }
+      .login-form-pane {
+        padding: 2.25rem 2rem;
+      }
+      .portal-topbar {
+        padding: 1.25rem 1.5rem 0.25rem;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .role-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .login-modal-card {
+        border-radius: 14px;
+      }
+      .form-meta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Brand Navigation (Without support link per instructions) -->
+  <header class="portal-topbar">
+    <a href="/" class="brand-identity" title="Blood Bank Management Portal">
+      <div class="brand-logo-drop">
+        <!-- Blood Drop SVG Icon -->
+        <svg viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:26px; height:30px;">
+          <path d="M12 1.5C12 1.5 3 12.2 3 18C3 23 7 26.5 12 26.5C17 26.5 21 23 21 18C21 12.2 12 1.5 12 1.5Z" fill="#8B1E2D" stroke="#731623" stroke-width="1.2" stroke-linejoin="round"/>
+          <ellipse cx="9" cy="17" rx="2" ry="4" transform="rotate(-30 9 17)" fill="rgba(255,255,255,0.3)"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <span class="brand-main-title">Blood Bank Management</span>
+        <span class="brand-subtitle">CENTRAL BLOOD NETWORK</span>
+      </div>
+    </a>
+  </header>
+
+  <!-- Main Login Card Section -->
+  <main class="login-main-wrapper">
+    <div class="login-modal-card">
+      
+      <!-- Left Column: Hospital Line-Art & Tagline -->
+      <section class="login-visual-pane">
+        <div class="illustration-box">
+          <!-- Vector Hospital Line-Art Matching Mockup Exact Aesthetic -->
+          <svg viewBox="0 0 260 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Ground Baseline -->
+            <path d="M10 160H250" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            
+            <!-- Left Foliage Bush -->
+            <path d="M18 160C18 152 24 146 32 146C34 146 36 147 38 148C41 143 47 140 54 140C62 140 68 145 70 152C72 150 75 149 78 149C85 149 90 154 90 160" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <path d="M30 160V152" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+
+            <!-- Right Foliage Tree -->
+            <path d="M222 160V144" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="222" cy="135" r="14" stroke="#94a3b8" stroke-width="1.8" fill="none"/>
+            <path d="M222 135V144" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+
+            <!-- Left Building Wing -->
+            <rect x="42" y="85" width="46" height="75" rx="1" stroke="#64748b" stroke-width="2" fill="#f1f5f9"/>
+            <!-- Left Wing Windows -->
+            <rect x="52" y="98" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="71" y="98" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="52" y="115" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="71" y="115" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="52" y="132" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="71" y="132" width="5" height="7" rx="0.5" fill="#64748b"/>
+
+            <!-- Right Building Wing -->
+            <rect x="172" y="95" width="46" height="65" rx="1" stroke="#64748b" stroke-width="2" fill="#f1f5f9"/>
+            <!-- Right Wing Windows -->
+            <rect x="182" y="108" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="201" y="108" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="182" y="125" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="201" y="125" width="5" height="7" rx="0.5" fill="#64748b"/>
+
+            <!-- Center Main Tower / Hospital Body -->
+            <rect x="88" y="60" width="84" height="100" rx="1" stroke="#64748b" stroke-width="2" fill="#f1f5f9"/>
+
+            <!-- Medical Cross Emblem on Top Facade -->
+            <path d="M125 72H135M130 67V77" stroke="#64748b" stroke-width="3" stroke-linecap="square"/>
+
+            <!-- Center Entrance Portal -->
+            <rect x="120" y="128" width="20" height="32" stroke="#64748b" stroke-width="1.8" fill="#f8fafc"/>
+            <line x1="130" y1="128" x2="130" y2="160" stroke="#94a3b8" stroke-width="1.2"/>
+
+            <!-- Blood Drop Icon at Front Center -->
+            <path d="M130 102C130 102 124 110 124 114.5C124 117.8 126.7 120.5 130 120.5C133.3 120.5 136 117.8 136 114.5C136 110 130 102 130 102Z" fill="#8B1E2D"/>
+
+            <!-- Center Tower Windows -->
+            <rect x="98" y="86" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="98" y="103" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="98" y="120" width="5" height="7" rx="0.5" fill="#64748b"/>
+            
+            <rect x="157" y="86" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="157" y="103" width="5" height="7" rx="0.5" fill="#64748b"/>
+            <rect x="157" y="120" width="5" height="7" rx="0.5" fill="#64748b"/>
+          </svg>
+        </div>
+        
+        <h1 class="visual-tagline">Supporting care,<br>together.</h1>
+        <p class="visual-subtext">A unified portal for blood banks<br>and hospitals.</p>
+      </section>
+
+      <!-- Right Column: Login Form & Role Selection -->
+      <section class="login-form-pane">
+        <div class="form-heading-group">
+          <h2 class="form-main-heading">Welcome back</h2>
+          <p class="form-sub-heading">Sign in to your account.</p>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="role-selection-group">
+          <label class="role-section-label">Select your role</label>
+          <div class="role-cards-grid">
+            <!-- Super Admin (First) -->
+            <div class="role-select-card active" data-role="ADMIN" id="role-card-admin">
+              <div class="role-icon">
+                <!-- Admin / Shield Lock Icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <circle cx="12" cy="11" r="2"></circle>
+                  <path d="M12 13v2"></path>
+                </svg>
+              </div>
+              <span class="role-name">Super Admin</span>
+            </div>
+
+            <!-- Blood Bank Staff -->
+            <div class="role-select-card" data-role="COORDINATOR" id="role-card-coord">
+              <div class="role-icon">
+                <!-- Person with gear icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+                  <circle cx="19" cy="11" r="2"></circle>
+                  <path d="M19 8v1M19 13v1M16.5 9.5l.8.5M20.7 12l.8.5M16.5 12.5l.8-.5M20.7 10l.8-.5"></path>
+                </svg>
+              </div>
+              <span class="role-name">Blood Bank Staff</span>
+            </div>
+
+            <!-- Hospital -->
+            <div class="role-select-card" data-role="HOSPITAL" id="role-card-hosp">
+              <div class="role-icon">
+                <!-- Hospital outline icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 21h18"></path>
+                  <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                  <path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path>
+                  <path d="M10 9h4"></path>
+                  <path d="M12 7v4"></path>
+                </svg>
+              </div>
+              <span class="role-name">Hospital</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form">
+          
+          <!-- Hospital ID Optional Field (shown when Hospital role is selected) -->
+          <div class="auth-input-group" id="hosp-id-wrapper" style="display: none;">
+            <label class="auth-input-label" for="login-hosp-id">Hospital ID <span style="color:var(--slate-400); font-weight:normal;">(Optional)</span></label>
+            <div class="input-icon-container">
+              <i class="fa-solid fa-id-card input-prefix-icon"></i>
+              <input type="text" id="login-hosp-id" class="auth-text-input font-mono" placeholder="e.g. HOSP101">
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="auth-input-group">
+            <label class="auth-input-label" for="login-email">Email address</label>
+            <div class="input-icon-container">
+              <i class="fa-regular fa-envelope input-prefix-icon"></i>
+              <input type="email" id="login-email" class="auth-text-input" placeholder="Enter your email" required autocomplete="email">
+            </div>
+          </div>
+
+          <!-- Password Field with View Eye Toggle -->
+          <div class="auth-input-group">
+            <label class="auth-input-label" for="login-password">Password</label>
+            <div class="password-input-wrapper">
+              <i class="fa-solid fa-lock input-prefix-icon"></i>
+              <input type="password" id="login-password" class="auth-text-input" placeholder="••••••••••••" required autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" id="password-toggle" title="Show or hide password" aria-label="Toggle password visibility">
+                <i class="fa-regular fa-eye" id="toggle-eye-icon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Meta Row: Remember Me & Forgot Password -->
+          <div class="form-meta-row">
+            <label class="remember-me-label">
+              <input type="checkbox" id="remember-me-check" class="remember-checkbox">
+              <span>Remember me</span>
+            </label>
+            <a href="javascript:void(0)" class="forgot-pwd-link" id="forgot-password-link">Forgot password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="login-submit-btn" class="btn-submit-signin">
+            <span id="btn-text">Sign in</span>
+          </button>
+        </form>
+
+        <!-- Create Account Link Divider -->
+        <div class="auth-footer-divider">
+          <span>Don't have an account? <a href="/signup">Create account</a></span>
+        </div>
+
+        <!-- Quick Demo autofill helper -->
+        <div class="quick-demo-pill" id="demo-credentials-box">
+          <div id="demo-text-preview">
+            <i class="fa-solid fa-circle-info" style="color:var(--slate-400); margin-right:4px;"></i>
+            <span>Demo: <strong id="demo-role-hint">admin@bloodbank.org / admin123</strong></span>
+          </div>
+          <button type="button" class="quick-demo-btn" id="quick-fill-btn">
+            <i class="fa-solid fa-bolt"></i> Auto Fill
+          </button>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/auth.js"></script>
+</body>
+</html>
